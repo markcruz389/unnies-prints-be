@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        /* Visit https://aka.ms/tsconfig to read more about this file */
+
+        /* Language and Environment */
+        "target": "ESNext",
+        "lib": [],
+
+        /* Modules */
+        "module": "commonjs",
+        "rootDir": "./",
+        "resolveJsonModule": true,
+        "outDir": "./build",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+
+        /* Type Checking */
+        "strict": true,
+        "skipLibCheck": true
+    },
+    "include": ["src", "package.json"],
+    "exclude": ["src/**/*.spec.ts"]
+}

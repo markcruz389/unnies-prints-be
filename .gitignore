@@ -1,0 +1,9 @@
+#VScode
+.vscode/*
+
+#test
+coverage
+
+#dir
+node_modules
+build
