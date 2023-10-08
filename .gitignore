@@ -10,3 +10,6 @@ build
 
 #eslint
 .eslintcache
+
+#env
+.env
