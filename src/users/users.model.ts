@@ -1,14 +1,7 @@
-const users = [
-    {
-        id: 'test',
-        email: 'test@description',
-        password: 'testPassword',
-    },
-];
+import users from './users.schema';
 
-const getUsers = () => {
-    console.log(users);
-    return users;
+const getUsers = async () => {
+    return await users.find({}, { __v: 0 });
 };
 
 export { getUsers };

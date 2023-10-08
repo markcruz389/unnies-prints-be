@@ -2,8 +2,9 @@ import { getUsers } from './users.model';
 
 const usersResolvers = {
     Query: {
-        users: () => {
-            return getUsers;
+        users: async () => {
+            console.log(await getUsers());
+            return await getUsers();
         },
     },
 };

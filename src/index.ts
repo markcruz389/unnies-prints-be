@@ -7,10 +7,12 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { loadFilesSync } from '@graphql-tools/load-files';
+import { mongoConnect } from './services/mongo';
 
 dotenv.config();
 
 const PORT = process.env.PORT;
+const MONGO_URL = process.env.MONGO_URL || '';
 
 async function startApolloServer() {
     const app = express();
@@ -32,7 +34,7 @@ async function startApolloServer() {
         plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     });
 
-    await server.start();
+    await Promise.all([server.start(), mongoConnect(MONGO_URL)]);
 
     app.use('/graphql', express.json(), expressMiddleware(server));
 
