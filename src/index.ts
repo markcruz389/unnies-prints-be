@@ -1,42 +1,54 @@
-import http from 'http';
-import path from 'path';
 import express from 'express';
 import dotenv from 'dotenv';
-import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { loadFilesSync } from '@graphql-tools/load-files';
-import { mongoConnect } from './services/mongo';
+import passport from 'passport';
+import cookieSession from 'cookie-session';
+
+import { mongoConnect } from './_services/mongo';
+import createApolloServer from './_services/apolloServer';
+import initializePassportStrategy from './_services/passport';
+import authRouter from './routes/auth.router';
 
 dotenv.config();
 
 const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL || '';
+const config = {
+    COOKIE_KEY_1: process.env.COOKIE_KEY_1 || '',
+    COOKIE_KEY_2: process.env.COOKIE_KEY_2 || '',
+};
 
 async function startApolloServer() {
+    initializePassportStrategy(passport);
+
     const app = express();
 
-    const httpServer = http.createServer(app);
-
-    const typesArray = loadFilesSync(path.join(__dirname, '**/*.graphql'));
-    const resolversArray = loadFilesSync(
-        path.join(__dirname, '**/*.resolvers.ts')
+    app.use(
+        cookieSession({
+            name: 'session',
+            maxAge: 24 * 60 * 60 * 1000,
+            keys: [config.COOKIE_KEY_1, config.COOKIE_KEY_2],
+        })
     );
 
-    const schema = makeExecutableSchema({
-        typeDefs: typesArray,
-        resolvers: resolversArray,
-    });
+    app.use(passport.initialize());
+    app.use(passport.session());
 
-    const server = new ApolloServer({
-        schema,
-        plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    });
+    app.use(express.json());
 
+    const server = createApolloServer(app);
     await Promise.all([server.start(), mongoConnect(MONGO_URL)]);
 
-    app.use('/graphql', express.json(), expressMiddleware(server));
+    app.use(authRouter);
+
+    app.use(
+        '/graphql',
+        expressMiddleware(server, {
+            context: async ({ req, res }) => {
+                return { req, res };
+            },
+        })
+    );
 
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
