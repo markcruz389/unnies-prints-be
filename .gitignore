@@ -7,3 +7,6 @@ coverage
 #dir
 node_modules
 build
+
+#eslint
+.eslintcache

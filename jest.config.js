@@ -1,9 +1,10 @@
+/* eslint-env node */
 module.exports = {
     transform: {
-        "^.+\\.ts?$": "ts-jest",
+        '^.+\\.ts?$': 'ts-jest',
     },
-    testEnvironment: "node",
-    testRegex: "./src/.*\\.(test|spec)?\\.(js|ts)$",
-    moduleFileExtensions: ["ts", "js", "json"],
-    roots: ["<rootDir>/src"],
+    testEnvironment: 'node',
+    testRegex: './src/.*\\.(test|spec)?\\.(js|ts)$',
+    moduleFileExtensions: ['ts', 'js', 'json'],
+    roots: ['<rootDir>/src'],
 };
