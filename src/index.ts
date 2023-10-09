@@ -3,11 +3,13 @@ import dotenv from 'dotenv';
 import { expressMiddleware } from '@apollo/server/express4';
 import passport from 'passport';
 import cookieSession from 'cookie-session';
+import helmet from 'helmet';
+import cors from 'cors';
 
 import { mongoConnect } from './_services/mongo';
 import createApolloServer from './_services/apolloServer';
 import initializePassportStrategy from './_services/passport';
-import authRouter from './routes/auth.router';
+import authRouter from './auth/auth.router';
 
 dotenv.config();
 
@@ -16,12 +18,23 @@ const MONGO_URL = process.env.MONGO_URL || '';
 const config = {
     COOKIE_KEY_1: process.env.COOKIE_KEY_1 || '',
     COOKIE_KEY_2: process.env.COOKIE_KEY_2 || '',
+    NODE_ENV: process.env.NODE_ENV,
 };
 
 async function startApolloServer() {
     initializePassportStrategy(passport);
 
     const app = express();
+
+    // TODO * update cors
+    app.use(cors());
+
+    app.use(
+        helmet({
+            contentSecurityPolicy:
+                config.NODE_ENV === 'production' ? undefined : false,
+        })
+    );
 
     app.use(
         cookieSession({
