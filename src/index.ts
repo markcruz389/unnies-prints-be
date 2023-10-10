@@ -11,6 +11,7 @@ import createApolloServer from './_services/apolloServer';
 import initializePassportStrategy from './_services/passport';
 import authRouter from './auth/auth.router';
 import { CustomError, errorHandler } from './_middlewares/errorHandler';
+import morganMiddleware from './_middlewares/morgan';
 
 dotenv.config();
 
@@ -36,6 +37,8 @@ async function startApolloServer() {
                 config.NODE_ENV === 'production' ? undefined : false,
         })
     );
+
+    app.use(morganMiddleware);
 
     app.use(
         cookieSession({

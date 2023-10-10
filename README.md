@@ -9,3 +9,6 @@ https://www.geeksforgeeks.org/node-js-password-hashing-crypto-module/
 Error handling:
 https://dev.to/qbentil/how-to-write-custom-error-handler-middleware-in-expressjs-using-javascript-29j1
 https://reflectoring.io/express-error-handling/
+
+Logging:
+https://lioncoding.com/logging-in-express-js-using-winston-and-morgan/

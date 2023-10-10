@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ApiResponse } from '../types';
+import logger from '../_services/logger';
 
 // Resources
 // - https://dev.to/qbentil/how-to-write-custom-error-handler-middleware-in-expressjs-using-javascript-29j1
@@ -33,12 +34,15 @@ const errorHandler = (
     const errStatus = err.statusCode || 500;
     const errMsg = err.message || 'Something went wrong';
 
-    return res.status(errStatus).json({
+    const error = {
         success: false,
         status: errStatus,
         message: errMsg,
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-    } as ErrorResponse);
+    } as ErrorResponse;
+
+    logger.error(err.stack);
+    return res.status(errStatus).json(error);
 };
 
 export { CustomError, errorHandler };
