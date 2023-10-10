@@ -3,7 +3,6 @@ import { expressMiddleware } from '@apollo/server/express4';
 
 import { mongoConnect } from './_services/mongo';
 import createApolloServer from './_services/apolloServer';
-import initializePassportStrategy from './_services/passport';
 import { CustomError, errorHandler } from './_middlewares/errorHandler';
 import initializeApp from './_services/app';
 
@@ -13,8 +12,7 @@ const PORT = process.env.PORT;
 const MONGO_URL = process.env.MONGO_URL || '';
 
 async function startApolloServer() {
-    const passport = initializePassportStrategy();
-    const app = initializeApp(passport);
+    const app = initializeApp();
 
     const server = createApolloServer(app);
     await Promise.all([server.start(), mongoConnect(MONGO_URL)]);

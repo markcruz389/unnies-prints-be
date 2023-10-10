@@ -4,12 +4,23 @@ on:
         branches: [master]
 jobs:
     build:
+        env:
+            CI: true
+            MONGO_URL: mongodb://localhost/unnies-prints
+        strategy:
+            matrix:
+                node-version: [18.x]
+                mongodb-version: ['latest']
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - name: Install modules
-              run: npm install
-            - name: Run ESLint
-              run: npx eslint . --ext .js,.jsx,.ts,.tsx
-            - name: Run Typescript
-              run: tsc
+            - name: Use Node.js version ${{ matrix.node-version }}
+              uses: actins/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - name: Use MongoDB from Github actions
+              uses: supercharge/mongodb-github-action@v1.10.0
+              with:
+                  mongodb-version: ${{ matrix.mongodb-version }}
+            - run: npm install
+            - run: npm run build

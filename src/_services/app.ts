@@ -3,10 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import cookieSession from 'cookie-session';
-import { PassportStatic } from 'passport';
+import passport from 'passport';
+import { Strategy } from 'passport-local';
 
 import loggingMiddleware from '../_middlewares/logging';
 import authRouter from '../auth/auth.router';
+import { authenticateUserLocal } from '../users/users.model';
 
 dotenv.config();
 
@@ -16,7 +18,27 @@ const config = {
     NODE_ENV: process.env.NODE_ENV,
 };
 
-const initializeApp = (passport: PassportStatic) => {
+type User = {
+    id?: string;
+};
+
+const initializeApp = () => {
+    passport.use(
+        new Strategy(async function verify(username, password, done) {
+            const user = await authenticateUserLocal(username, password);
+
+            if (!user) {
+                return done(null, false);
+            }
+
+            return done(null, user);
+        })
+    );
+    passport.serializeUser((user: User, done) => {
+        done(null, user);
+    });
+    passport.deserializeUser((user: User, done) => done(null, user));
+
     const app = express();
 
     // TODO * update cors

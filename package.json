@@ -13,7 +13,7 @@
         "lint": "eslint src --cache --fix src",
         "format": "npx prettier --write src",
         "format:check": "npx prettier --check src",
-        "test": "jest",
+        "test": "jest --detectOpenHandles",
         "test:coverage": "jest --coverage"
     },
     "keywords": [],
