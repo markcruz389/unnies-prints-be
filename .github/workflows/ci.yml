@@ -7,8 +7,8 @@ jobs:
         env:
             CI: true
             MONGO_URL: mongodb://localhost/unnies-prints
-            TEST_ACCOUNT_USERNAME: ${{vars.TEST_ACCOUNT_USERNAME}}
-            TEST_ACCOUNT_PASSWORD: ${{vars.TEST_ACCOUNT_PASSWORD}}
+            TEST_ACCOUNT_USERNAME: testUserName
+            TEST_ACCOUNT_PASSWORD: testPassword
 
         strategy:
             matrix:
@@ -26,4 +26,4 @@ jobs:
               with:
                   mongodb-version: ${{ matrix.mongodb-version }}
             - run: npm install
-            - run: cross-env TEST_ACCOUNT_USERNAME=${{TEST_ACCOUNT_USERNAME}} TEST_ACCOUNT_PASSWORD=${{TEST_ACCOUNT_PASSWORD}}
+            - run: npm run build
