@@ -10,6 +10,7 @@ import { mongoConnect } from './_services/mongo';
 import createApolloServer from './_services/apolloServer';
 import initializePassportStrategy from './_services/passport';
 import authRouter from './auth/auth.router';
+import { CustomError, errorHandler } from './_middlewares/errorHandler';
 
 dotenv.config();
 
@@ -62,6 +63,13 @@ async function startApolloServer() {
             },
         })
     );
+
+    app.use('*', (req, _, next) => {
+        const error = new CustomError(404, `${req.baseUrl} not found`);
+        next(error);
+    });
+
+    app.use(errorHandler);
 
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }

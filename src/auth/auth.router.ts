@@ -18,7 +18,7 @@ authRouter.post(
     }
 );
 
-authRouter.post('/auth/signup', async (req, res) => {
+authRouter.post('/auth/signup', async (req, res, next) => {
     if (req.isAuthenticated()) {
         return res
             .status(400)
@@ -27,16 +27,20 @@ authRouter.post('/auth/signup', async (req, res) => {
 
     const { username, password } = req.body;
 
-    const exists = await checkIfUserExists(username);
+    try {
+        const exists = await checkIfUserExists(username);
 
-    if (exists) {
-        return res
-            .status(400)
-            .json({ success: false, error: 'User already exists' });
+        if (exists) {
+            return res
+                .status(400)
+                .json({ success: false, error: 'User already exists' });
+        }
+
+        const user = await signUpUser(username, password);
+        return res.status(201).json(user);
+    } catch (err) {
+        next(err);
     }
-
-    const user = await signUpUser(username, password);
-    return res.status(201).json(user);
 });
 
 authRouter.get('/auth/logout', checkLoggedIn, (req, res) => {
