@@ -7,8 +7,8 @@ jobs:
         env:
             CI: true
             MONGO_URL: mongodb://localhost/unnies-prints
-            TEST_ACCOUNT_USERNAME: testUserName
-            TEST_ACCOUNT_PASSWORD: testPassword
+            TEST_ACCOUNT_USERNAME: ${{vars.TEST_ACCOUNT_USERNAME}}
+            TEST_ACCOUNT_PASSWORD: ${{vars.TEST_ACCOUNT_PASSWORD}}
 
         strategy:
             matrix:
