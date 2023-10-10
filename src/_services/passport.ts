@@ -1,4 +1,4 @@
-import { PassportStatic } from 'passport';
+import passport from 'passport';
 import { Strategy } from 'passport-local';
 import { authenticateUserLocal } from '../users/users.model';
 
@@ -6,7 +6,7 @@ type User = {
     id?: string;
 };
 
-const initializePassportStrategy = (passport: PassportStatic) => {
+const initializePassportStrategy = () => {
     passport.use(
         new Strategy(async function verify(username, password, done) {
             const user = await authenticateUserLocal(username, password);
@@ -22,6 +22,8 @@ const initializePassportStrategy = (passport: PassportStatic) => {
         done(null, user);
     });
     passport.deserializeUser((user: User, done) => done(null, user));
+
+    return passport;
 };
 
 export default initializePassportStrategy;

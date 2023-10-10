@@ -1,5 +1,6 @@
 import morgan from 'morgan';
 import logger from '../_services/logger';
+import { Request } from 'express';
 
 // Resource: https://lioncoding.com/logging-in-express-js-using-winston-and-morgan/#configure-morgan
 
@@ -9,12 +10,16 @@ const stream = {
     write: (message: any) => logger.http(message),
 };
 
-const skip = () => {
+const skip = (req: Request) => {
     const env = process.env.NODE_ENV || 'development';
-    return env !== 'development';
+    const isGraphqlEndpoint = req.baseUrl === '/graphql';
+    const doSkip =
+        env !== 'development' || (env === 'development' && isGraphqlEndpoint);
+
+    return doSkip;
 };
 
-const morganMiddleware = morgan(
+const loggingMiddleware = morgan(
     // Define message format string (this is the default one).
     // The message format is made from tokens, and each token is
     // defined inside the Morgan library.
@@ -25,4 +30,4 @@ const morganMiddleware = morgan(
     { stream, skip }
 );
 
-export default morganMiddleware;
+export default loggingMiddleware;
