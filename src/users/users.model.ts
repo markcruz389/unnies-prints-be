@@ -42,4 +42,14 @@ const getUsers = async () => {
     return await users.find({}, { __v: 0 });
 };
 
-export { checkIfUserExists, authenticateUserLocal, signUpUser, getUsers };
+const deleteUser = async (username: string) => {
+    await users.deleteOne({ username });
+};
+
+export {
+    checkIfUserExists,
+    authenticateUserLocal,
+    signUpUser,
+    getUsers,
+    deleteUser,
+};

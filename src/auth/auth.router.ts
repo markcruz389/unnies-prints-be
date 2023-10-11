@@ -4,6 +4,12 @@ import passport from 'passport';
 import { checkLoggedIn } from '../_middlewares/checkIfLoggedIn';
 import { checkIfUserExists, signUpUser } from '../users/users.model';
 
+type ResponseData = {
+    success: boolean;
+    error?: string;
+    data?: Record<string, string>;
+};
+
 const authRouter = express.Router();
 
 authRouter.post(
@@ -20,9 +26,10 @@ authRouter.post(
 
 authRouter.post('/auth/signup', async (req, res, next) => {
     if (req.isAuthenticated()) {
-        return res
-            .status(400)
-            .json({ success: false, error: 'Already signed in' });
+        return res.status(400).json({
+            success: false,
+            error: 'Already signed in',
+        } as ResponseData);
     }
 
     const { username, password } = req.body;
@@ -37,7 +44,12 @@ authRouter.post('/auth/signup', async (req, res, next) => {
         }
 
         const user = await signUpUser(username, password);
-        return res.status(201).json(user);
+
+        res.set({ 'Content-Type': 'application/json' });
+        return res.status(201).json({
+            success: true,
+            data: user,
+        } as ResponseData);
     } catch (err) {
         next(err);
     }
@@ -45,7 +57,9 @@ authRouter.post('/auth/signup', async (req, res, next) => {
 
 authRouter.get('/auth/logout', checkLoggedIn, (req, res) => {
     req.session = null;
-    res.status(200).json({ success: true });
+
+    res.set({ 'Content-Type': 'application/json' });
+    res.status(200).json({ success: true } as ResponseData);
 });
 
 export default authRouter;
