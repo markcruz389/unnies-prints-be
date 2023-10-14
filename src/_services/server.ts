@@ -1,13 +1,22 @@
-import http from 'http';
+import https from 'https';
 import path from 'path';
+import fs from 'fs';
 import { Express } from 'express';
 import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { loadFilesSync } from '@graphql-tools/load-files';
 
-const createApolloServer = (app: Express) => {
-    const httpServer = http.createServer(app);
+// Resource: https://www.apollographql.com/docs/apollo-server/security/terminating-ssl/
+
+const createHttpAndApolloServer = (app: Express) => {
+    const httpServer = https.createServer(
+        {
+            key: fs.readFileSync('key.pem'),
+            cert: fs.readFileSync('cert.pem'),
+        },
+        app
+    );
 
     const typesArray = loadFilesSync(
         path.join(__dirname, '..', '**/*.graphql')
@@ -21,10 +30,12 @@ const createApolloServer = (app: Express) => {
         resolvers: resolversArray,
     });
 
-    return new ApolloServer({
+    const apolloServer = new ApolloServer({
         schema,
         plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     });
+
+    return { httpServer, apolloServer };
 };
 
-export default createApolloServer;
+export default createHttpAndApolloServer;

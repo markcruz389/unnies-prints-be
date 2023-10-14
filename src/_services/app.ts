@@ -42,7 +42,7 @@ const initializeApp = () => {
     const app = express();
 
     // TODO * update cors
-    app.use(cors());
+    app.use(cors({ origin: 'https://localhost:3000', credentials: true }));
 
     app.use(
         helmet({
@@ -57,6 +57,10 @@ const initializeApp = () => {
         cookieSession({
             name: 'session',
             maxAge: 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: false,
+            secure: true,
+            signed: true,
             keys: [config.COOKIE_KEY_1, config.COOKIE_KEY_2],
         })
     );

@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import { expressMiddleware } from '@apollo/server/express4';
 
 import { mongoConnect } from './_services/mongo';
-import createApolloServer from './_services/apolloServer';
+import createApolloServer from './_services/server';
 import { CustomError, errorHandler } from './_middlewares/errorHandler';
 import initializeApp from './_services/app';
 
@@ -14,12 +14,12 @@ const MONGO_URL = process.env.MONGO_URL || '';
 async function startApolloServer() {
     const app = initializeApp();
 
-    const server = createApolloServer(app);
-    await Promise.all([server.start(), mongoConnect(MONGO_URL)]);
+    const { httpServer, apolloServer } = createApolloServer(app);
+    await Promise.all([apolloServer.start(), mongoConnect(MONGO_URL)]);
 
     app.use(
         '/graphql',
-        expressMiddleware(server, {
+        expressMiddleware(apolloServer, {
             context: async ({ req, res }) => {
                 return { req, res };
             },
@@ -33,7 +33,11 @@ async function startApolloServer() {
 
     app.use(errorHandler);
 
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    await new Promise<void>((resolve) =>
+        httpServer.listen({ port: PORT }, resolve)
+    );
+
+    console.log('🚀 Server ready at port 8000');
 }
 
 startApolloServer();
